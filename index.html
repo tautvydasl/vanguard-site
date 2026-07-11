@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VANGUARD OPERATIONS // Arma Reforger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@600;800&family=Oswald:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14140f;
+    --panel: #1b1d14;
+    --panel-2: #20221a;
+    --olive: #4a5d23;
+    --olive-light: #7a8f45;
+    --khaki: #d8cfb8;
+    --khaki-dim: #9b9280;
+    --rust: #c9622a;
+    --line: #34372a;
+    --stamp: #9c3a24;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--khaki);
+    font-family:'Public Sans', sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* topo grid background */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity:0.25;
+  }
+  .contour{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.14;
+  }
+  .eyebrow{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.25em;
+    font-size:0.72rem;
+    color:var(--olive-light);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--olive-light);}
+  h1,h2,h3{font-family:'Big Shoulders Stencil', sans-serif; letter-spacing:0.01em; line-height:0.95;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px; position:relative; z-index:2;}
+
+  /* ---------- top bar ---------- */
+  header.topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(20,20,15,0.88);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1180px; margin:0 auto; padding:16px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{
+    font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:0.08em;
+    font-size:1.05rem; text-transform:uppercase; display:flex; align-items:center; gap:10px;
+  }
+  .brand .dot{width:9px; height:9px; background:var(--rust); border-radius:50%; box-shadow:0 0 8px var(--rust);}
+  nav.tabs{display:flex; gap:0; font-family:'Oswald', sans-serif; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase;}
+  nav.tabs a{
+    padding:8px 14px; color:var(--khaki-dim); text-decoration:none; border-left:1px solid var(--line);
+    transition:color .2s, background .2s;
+  }
+  nav.tabs a:hover{color:var(--khaki); background:var(--panel-2);}
+  @media (max-width:860px){ nav.tabs{display:none;} }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; padding:120px 0 90px; overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .stamp{
+    position:absolute; top:52px; right:32px;
+    border:2px solid var(--stamp); color:var(--stamp);
+    font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:0.2em;
+    text-transform:uppercase; font-size:0.68rem; padding:8px 14px;
+    transform:rotate(6deg); opacity:0.85; border-radius:2px;
+  }
+  @media (max-width:700px){ .stamp{display:none;} }
+  .hero .eyebrow{margin-bottom:22px;}
+  .hero h1{
+    font-size:clamp(3.2rem, 9vw, 7.4rem);
+    color:var(--khaki);
+    text-shadow:0 0 40px rgba(74,93,35,0.35);
+  }
+  .hero h1 span{color:var(--rust);}
+  .hero p.lede{
+    max-width:560px; margin-top:26px; font-size:1.08rem; line-height:1.6; color:var(--khaki-dim);
+  }
+  .ticker{
+    margin-top:36px; display:flex; gap:28px; flex-wrap:wrap;
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--olive-light);
+  }
+  .ticker span::before{content:'▸ '; color:var(--rust);}
+  .cta-row{display:flex; gap:16px; margin-top:44px; flex-wrap:wrap;}
+  .btn{
+    font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.14em;
+    font-size:0.82rem; padding:15px 26px; text-decoration:none; border-radius:2px;
+    display:inline-flex; align-items:center; gap:10px; transition:transform .15s, background .2s, border-color .2s;
+  }
+  .btn-primary{background:var(--rust); color:#161409; font-weight:600;}
+  .btn-primary:hover{transform:translateY(-2px); background:#e0703a;}
+  .btn-ghost{border:1px solid var(--olive); color:var(--khaki);}
+  .btn-ghost:hover{background:var(--panel-2); border-color:var(--olive-light);}
+
+  .scanline{
+    position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, var(--olive-light), transparent);
+    opacity:0.6; animation:scan 7s linear infinite;
+  }
+  @keyframes scan{ 0%{top:0%;} 100%{top:100%;} }
+
+  /* ---------- section shell ---------- */
+  section{position:relative; padding:100px 0; border-bottom:1px solid var(--line);}
+  .sec-head{display:flex; align-items:baseline; gap:18px; margin-bottom:52px;}
+  .sec-num{font-family:'IBM Plex Mono', monospace; color:var(--olive-light); font-size:0.85rem;}
+  .sec-head h2{font-size:clamp(2.1rem, 5vw, 3.4rem); color:var(--khaki);}
+  .fade-in{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .fade-in.in{opacity:1; transform:translateY(0);}
+
+  /* SITUATION */
+  .situation-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:60px;}
+  @media (max-width:860px){ .situation-grid{grid-template-columns:1fr;} }
+  .situation-grid p{font-size:1.02rem; line-height:1.85; color:var(--khaki-dim); margin-bottom:18px;}
+  .situation-grid p strong{color:var(--khaki);}
+  .dossier-card{
+    background:var(--panel); border:1px solid var(--line); padding:28px; border-radius:2px;
+  }
+  .dossier-card .mono{color:var(--olive-light); font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase;}
+  .dossier-card ul{margin-top:16px; list-style:none;}
+  .dossier-card li{padding:10px 0; border-top:1px dashed var(--line); display:flex; justify-content:space-between; font-size:0.92rem;}
+  .dossier-card li:first-child{border-top:none;}
+  .dossier-card li span:last-child{font-family:'IBM Plex Mono', monospace; color:var(--khaki);}
+
+  /* MISSION cards */
+  .mode-grid{display:grid; grid-template-columns:1fr 1fr; gap:28px;}
+  .mode-grid.three{grid-template-columns:repeat(3,1fr);}
+  @media (max-width:780px){ .mode-grid{grid-template-columns:1fr;} .mode-grid.three{grid-template-columns:1fr;} }
+  .mode-card{
+    background:var(--panel); border:1px solid var(--line); padding:36px; border-radius:2px;
+    position:relative; overflow:hidden; transition:border-color .25s, transform .25s;
+  }
+  .mode-card:hover{border-color:var(--olive-light); transform:translateY(-4px);}
+  .mode-card .tag{
+    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:0.7rem;
+    letter-spacing:0.15em; padding:4px 10px; border-radius:20px; margin-bottom:20px;
+  }
+  .mode-card.pve .tag{background:rgba(74,93,35,0.25); color:var(--olive-light); border:1px solid var(--olive);}
+  .mode-card.pvp .tag{background:rgba(201,98,42,0.18); color:var(--rust); border:1px solid var(--rust);}
+  .mode-card.ff{border-color:var(--rust);}
+  .tag-live{background:rgba(201,98,42,0.22); color:var(--rust); border:1px solid var(--rust); animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+  .mode-card h3{font-size:2rem; color:var(--khaki); margin-bottom:14px;}
+  .mode-card p{color:var(--khaki-dim); line-height:1.7; margin-bottom:18px;}
+  .mode-card ul{list-style:none;}
+  .mode-card li{padding:7px 0; font-size:0.92rem; color:var(--khaki); display:flex; gap:10px;}
+  .mode-card li::before{content:'—'; color:var(--olive-light);}
+
+  /* EXECUTION - campaign feature */
+  .campaign{
+    background:linear-gradient(160deg, var(--panel) 0%, #171911 100%);
+    border:1px solid var(--olive); border-radius:2px; padding:50px; position:relative;
+  }
+  .campaign::before{
+    content:''; position:absolute; inset:0; border-radius:2px; padding:1px;
+    background:linear-gradient(120deg, var(--rust), transparent 40%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; opacity:0.5; pointer-events:none;
+  }
+  .campaign-badge{
+    display:inline-flex; align-items:center; gap:8px; background:var(--rust); color:#171203;
+    font-family:'Oswald',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:0.14em;
+    font-size:0.72rem; padding:6px 14px; border-radius:2px; margin-bottom:22px;
+  }
+  .campaign h3{font-size:clamp(2.6rem, 7vw, 4.6rem); color:var(--khaki);}
+  .campaign .subtitle{font-family:'Oswald', sans-serif; color:var(--olive-light); letter-spacing:0.1em; text-transform:uppercase; font-size:1rem; margin-bottom:24px;}
+  .campaign p.desc{max-width:680px; color:var(--khaki-dim); line-height:1.85; font-size:1.02rem; margin-bottom:32px;}
+  .brief{
+    background:rgba(0,0,0,0.35); border-left:3px solid var(--rust); padding:20px 24px; margin-bottom:36px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.85rem; line-height:1.9; color:var(--khaki-dim);
+  }
+  .redact{background:var(--khaki-dim); color:transparent; border-radius:2px; padding:0 2px;}
+  .stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  @media (max-width:700px){ .stat-grid{grid-template-columns:repeat(2,1fr);} }
+  .stat{background:var(--panel); padding:22px 20px;}
+  .stat .num{font-family:'Big Shoulders Stencil', sans-serif; font-size:2.2rem; color:var(--rust);}
+  .stat .lbl{font-family:'Oswald', sans-serif; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--khaki-dim); margin-top:4px;}
+
+  .lore{margin-top:36px; padding-top:32px; border-top:1px dashed var(--line);}
+  .lore-label{margin-bottom:14px;}
+  .lore p{color:var(--khaki-dim); line-height:1.85; font-size:0.98rem; margin-bottom:14px; max-width:760px;}
+  .video-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:36px;}
+  @media (max-width:780px){ .video-grid{grid-template-columns:1fr;} }
+  .video-label{margin-bottom:10px;}
+  .video-frame{position:relative; width:100%; padding-top:56.25%; background:#000; border:1px solid var(--line); border-radius:2px; overflow:hidden;}
+  .video-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .video-fallback{
+    display:inline-block; margin-top:10px; font-family:'IBM Plex Mono', monospace; font-size:0.75rem;
+    color:var(--olive-light); text-decoration:none; border-bottom:1px dashed var(--olive-light);
+  }
+  .video-fallback:hover{color:var(--rust); border-color:var(--rust);}
+
+  /* STATS / LEADERBOARD */
+  .stats-intro{color:var(--khaki-dim); font-size:1rem; margin-bottom:32px; max-width:600px;}
+  .stats-tabs{display:flex; gap:2px; margin-bottom:0; flex-wrap:wrap;}
+  .stat-tab{
+    font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.1em; font-size:0.78rem;
+    background:var(--panel); color:var(--khaki-dim); border:1px solid var(--line); border-bottom:none;
+    padding:14px 22px; cursor:pointer; transition:color .2s, background .2s;
+  }
+  .stat-tab:hover{color:var(--khaki);}
+  .stat-tab.active{color:var(--khaki); background:var(--panel-2); border-bottom:2px solid var(--rust);}
+  .leaderboard-panel{border:1px solid var(--line); background:var(--panel); padding:28px;}
+  .leaderboard-panel.hidden{display:none;}
+  .online-strip{
+    display:flex; align-items:center; gap:12px; margin-bottom:26px; padding-bottom:20px;
+    border-bottom:1px dashed var(--line); flex-wrap:wrap; font-size:0.82rem;
+  }
+  .online-dot{width:9px; height:9px; border-radius:50%; background:var(--olive-light); box-shadow:0 0 8px var(--olive-light); animation:pulse 2s ease-in-out infinite;}
+  #online-label{color:var(--khaki); letter-spacing:0.05em;}
+  .online-names{color:var(--khaki-dim);}
+  .board-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media (max-width:780px){ .board-grid{grid-template-columns:1fr;} }
+  .board-title{color:var(--olive-light); font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:12px;}
+  table.board{width:100%; border-collapse:collapse; font-family:'IBM Plex Mono', monospace; font-size:0.88rem; border:1px solid var(--line);}
+  table.board th{
+    text-align:left; padding:12px 16px; font-family:'Oswald', sans-serif; text-transform:uppercase;
+    letter-spacing:0.1em; font-size:0.68rem; color:var(--olive-light); border-bottom:1px solid var(--line); background:var(--panel-2);
+  }
+  table.board td{padding:11px 16px; border-bottom:1px solid var(--line); color:var(--khaki);}
+  table.board tr:last-child td{border-bottom:none;}
+  table.board tr:hover td{background:var(--panel-2);}
+  table.board td:first-child{color:var(--olive-light);}
+  .board-empty{color:var(--khaki-dim); font-style:italic; text-align:center; padding:24px 16px !important;}
+  .stats-note{margin-top:20px; color:var(--khaki-dim); font-size:0.72rem;}
+
+  /* SUSTAINMENT */
+  .req-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  @media (max-width:900px){ .req-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:600px){ .req-grid{grid-template-columns:1fr;} }
+  .req-card{border:1px solid var(--line); padding:24px; background:var(--panel);}
+  .req-card .mono{color:var(--olive-light); font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;}
+  .req-card .val{font-family:'Big Shoulders Stencil', sans-serif; font-size:1.9rem; color:var(--khaki); margin-top:6px;}
+  .req-card .sub{color:var(--khaki-dim); font-size:0.85rem; margin-top:6px; line-height:1.5;}
+
+  /* COMMAND AND SIGNAL / footer */
+  .signal{text-align:center; padding-top:60px;}
+  .signal h2{font-size:clamp(2.4rem,6vw,4rem);}
+  .signal p{color:var(--khaki-dim); max-width:520px; margin:18px auto 40px; line-height:1.7;}
+  .connect{
+    display:inline-flex; align-items:center; gap:14px; background:var(--panel); border:1px solid var(--line);
+    padding:14px 22px; font-family:'IBM Plex Mono', monospace; font-size:0.9rem; border-radius:2px; margin-bottom:14px;
+  }
+  .connect .k{color:var(--olive-light);}
+  footer{
+    padding:40px 0 60px; text-align:center; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
+    color:var(--khaki-dim); letter-spacing:0.08em;
+  }
+  footer .end{color:var(--olive-light); margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<svg class="contour" viewBox="0 0 1200 1400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#7a8f45" stroke-width="1">
+    <path d="M-50 120 C 200 60, 400 200, 650 140 S 1000 40, 1250 160" />
+    <path d="M-50 260 C 220 190, 420 330, 660 270 S 1000 170, 1250 300" />
+    <path d="M-50 620 C 200 560, 420 700, 650 640 S 1000 540, 1250 660" />
+    <path d="M-50 760 C 220 690, 420 830, 660 770 S 1000 670, 1250 800" />
+    <path d="M-50 1080 C 200 1020, 420 1160, 650 1100 S 1000 1000, 1250 1120" />
+  </g>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="dot"></span>VANGUARD OPERATIONS</div>
+    <nav class="tabs">
+      <a href="#situation">Situation</a>
+      <a href="#mission">Mission</a>
+      <a href="#execution">Execution</a>
+      <a href="#stats">Stats</a>
+      <a href="#sustainment">Sustainment</a>
+      <a href="#signal">Command &amp; Signal</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="scanline"></div>
+    <div class="wrap">
+      <div class="stamp">PvE // PvP<br>Active Theater</div>
+      <div class="eyebrow">Vanguard Operations · Arma Reforger Community</div>
+      <h1>VANGUARD<br><span>OPERATIONS</span></h1>
+      <p class="lede">A tactical Arma Reforger server, run out of Lithuania. Cooperative operations against AI, and faction battles against real players — one front, every night.</p>
+      <div class="ticker">
+        <span>54.6872° N, 25.2797° E — AO VILNIUS</span>
+        <span>SLOTS: 20 · EU</span>
+        <span>CAMPAIGN: PARTIZANAI 1989</span>
+      </div>
+      <div class="cta-row">
+        <a href="https://discord.gg/wpaFup8MM" target="_blank" rel="noopener" class="btn btn-primary">Join Discord</a>
+        <a href="#execution" class="btn btn-ghost">View campaign: Partizanai 1989</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="situation">
+    <div class="wrap">
+      <div class="sec-head fade-in"><span class="sec-num">01</span><h2>Situation</h2></div>
+      <div class="situation-grid">
+        <div class="fade-in">
+          <p><strong>Vanguard Operations</strong> is a Lithuania-run Arma Reforger community, built for players who want real, well-planned operations — not chaotic deathmatch.</p>
+          <p>We run three servers under one command: <strong>Freedom Fighters / Partizanai 1989</strong>, our asymmetric PvE/PvP campaign — already live — plus a dedicated <strong>PvE</strong> operations server and a dedicated <strong>PvP</strong> conflict server, both spinning up soon.</p>
+          <p>Every server keeps its own scenario, map, and rules — and every kill, every operation, feeds into the same after-action ledger.</p>
+        </div>
+        <div class="dossier-card fade-in">
+          <div class="mono">Dossier Summary</div>
+          <ul>
+            <li><span>Game</span><span>Arma Reforger</span></li>
+            <li><span>Servers</span><span>PvE · PvP · Freedom Fighters</span></li>
+            <li><span>Region</span><span>EU (London)</span></li>
+            <li><span>Slots</span><span>20 per server</span></li>
+            <li><span>Access</span><span>Password / Whitelist</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mission">
+    <div class="wrap">
+      <div class="sec-head fade-in"><span class="sec-num">02</span><h2>Mission</h2></div>
+      <div class="mode-grid three">
+        <div class="mode-card ff fade-in">
+          <span class="tag tag-live">● LIVE NOW</span>
+          <h3>Freedom Fighters</h3>
+          <p>Asymmetric campaign, PvE and PvP combined. Small resistance cells operate in the forests against an occupying garrison — and against rival factions. Partizanai 1989.</p>
+          <ul>
+            <li>Live, whitelisted, 20 slots</li>
+            <li>Persistent forest campaign</li>
+            <li>Full lore below ↓</li>
+          </ul>
+        </div>
+        <div class="mode-card pve fade-in">
+          <span class="tag">COMING SOON</span>
+          <h3>PvE Operations</h3>
+          <p>Squad missions against AI garrisons: recon, target elimination, territory capture. Every operation has an objective, a clock, and real consequences on the map.</p>
+          <ul>
+            <li>Dynamic AI enemy outposts</li>
+            <li>Persistent frontline map</li>
+            <li>Command and squad structure</li>
+          </ul>
+        </div>
+        <div class="mode-card pvp fade-in">
+          <span class="tag">COMING SOON</span>
+          <h3>PvP Conflict</h3>
+          <p>Two or more factions fight over resources and territory. Victory comes from coordination, not numbers — a small team with a good plan can beat a larger force.</p>
+          <ul>
+            <li>Territory control</li>
+            <li>Limited respawn system</li>
+            <li>Seasonal ranking</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="execution">
+    <div class="wrap">
+      <div class="sec-head fade-in"><span class="sec-num">03</span><h2>Execution</h2></div>
+      <div class="campaign fade-in">
+        <span class="campaign-badge">New Campaign</span>
+        <div class="subtitle">Freedom Fighters Campaign</div>
+        <h3>PARTIZANAI<br>1989</h3>
+        <p class="desc">A campaign inspired by the postwar Lithuanian partisans — the Forest Brothers — and their resistance. Players command small resistance cells operating in the forests against an occupying army: ambushes, a courier network, hidden bunkers, and the constant risk of being hunted down. Asymmetric warfare — small forces against a much larger army.</p>
+
+        <div class="brief">
+          OPERATION LOG — <span class="redact">████████</span><br>
+          SECTOR: FOREST MASSIF, ██████████<br>
+          FORCE: RESISTANCE UNIT "<span class="redact">████</span>"<br>
+          OBJECTIVE: SURVIVE. HOLD THE COURIER NETWORK. <span class="redact">██████████████</span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat"><div class="num">20</div><div class="lbl">Player Slots</div></div>
+          <div class="stat"><div class="num">154</div><div class="lbl">Mods Loaded</div></div>
+          <div class="stat"><div class="num">A</div><div class="lbl">Asymmetric PvP/PvE</div></div>
+          <div class="stat"><div class="num">∞</div><div class="lbl">Persistent Campaign</div></div>
+        </div>
+
+        <div class="lore">
+          <div class="mono lore-label">The History Behind It</div>
+          <p>After signing the Molotov–Ribbentrop Pact, Nazi Germany and the Soviet Union carve up Eastern Europe into spheres of influence. Lithuania falls under Soviet control and is occupied. Mass deportations to Siberia begin. Young men start gathering in the forests in small groups, and more and more people join the fight for freedom and independence. Partisan units form across different regions of the country.</p>
+          <p>A growing network of supporters helps them hide, gathers intelligence, and supplies the equipment and gear they need to keep fighting the occupiers. The partisan movement becomes a serious problem for the occupying forces, who spread propaganda to discredit the partisans — the partisans answer in kind, spreading their own propaganda calling people to fight for Lithuania and freedom.</p>
+          <p>With so few resources, the Forest Brothers often have no choice but to raid Soviet troops — seizing weapons, vehicles, and other supplies, or hitting key targets outright. Soviet forces vastly outnumber them, so unity and cunning are everything. For a free Lithuania.</p>
+        </div>
+
+        <div class="video-grid">
+          <div class="video-card">
+            <div class="mono video-label">Field Footage — Partizanai 1989</div>
+            <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/S1legGYgbFA?rel=0" title="Partizanai 1989" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <a class="video-fallback" href="https://www.youtube.com/watch?v=S1legGYgbFA" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+          </div>
+          <div class="video-card">
+            <div class="mono video-label">Preview — Upcoming PvP Front</div>
+            <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/Mos5q7n_nm0?rel=0" title="Upcoming PvP Front" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+            <a class="video-fallback" href="https://www.youtube.com/watch?v=Mos5q7n_nm0" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stats">
+    <div class="wrap">
+      <div class="sec-head fade-in"><span class="sec-num">04</span><h2>After-Action Report</h2></div>
+      <p class="stats-intro fade-in">Kills, deaths, and standing across all three servers. Pick a front to see its ledger.</p>
+
+      <div class="stats-tabs fade-in">
+        <button class="stat-tab active" data-target="ff">Freedom Fighters</button>
+        <button class="stat-tab" data-target="pve">PvE Operations</button>
+        <button class="stat-tab" data-target="pvp">PvP Conflict</button>
+      </div>
+
+      <div class="leaderboard-panel fade-in" id="panel-ff">
+        <div class="online-strip">
+          <span class="online-dot"></span>
+          <span class="mono" id="online-label">Online: —</span>
+          <span class="mono online-names" id="online-names">—</span>
+        </div>
+        <div class="board-grid">
+          <div class="board-block">
+            <div class="board-title mono">🎯 AI Hunter Leaderboard</div>
+            <table class="board" id="board-ai-hunter">
+              <thead><tr><th>#</th><th>Player</th><th>AI Kills</th></tr></thead>
+              <tbody><tr><td colspan="3" class="board-empty">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="board-block">
+            <div class="board-title mono">🏆 PvP Leaderboard</div>
+            <table class="board" id="board-pvp-live">
+              <thead><tr><th>#</th><th>Player</th><th>Kills</th><th>Longest Shot</th></tr></thead>
+              <tbody><tr><td colspan="4" class="board-empty">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <p class="stats-note mono" id="stats-updated">Syncing with Discord…</p>
+      </div>
+
+      <div class="leaderboard-panel hidden" id="panel-pve">
+        <table class="board">
+          <thead><tr><th>#</th><th>Callsign</th><th>Kills</th><th>Deaths</th><th>K/D</th><th>Playtime</th></tr></thead>
+          <tbody><tr><td colspan="6" class="board-empty">Server coming soon — ledger opens on launch day.</td></tr></tbody>
+        </table>
+      </div>
+      <div class="leaderboard-panel hidden" id="panel-pvp">
+        <table class="board">
+          <thead><tr><th>#</th><th>Callsign</th><th>Kills</th><th>Deaths</th><th>K/D</th><th>Playtime</th></tr></thead>
+          <tbody><tr><td colspan="6" class="board-empty">Server coming soon — ledger opens on launch day.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="sustainment">
+    <div class="wrap">
+      <div class="sec-head fade-in"><span class="sec-num">05</span><h2>Sustainment</h2></div>
+      <div class="req-grid">
+        <div class="req-card fade-in"><div class="mono">Mods</div><div class="val">154</div><div class="sub">Full mod list loads automatically through the Reforger launcher on join.</div></div>
+        <div class="req-card fade-in"><div class="mono">Slots</div><div class="val">20</div><div class="sub">Shared between the active PvE operation and the PvP front.</div></div>
+        <div class="req-card fade-in"><div class="mono">Comms</div><div class="val">Discord</div><div class="sub">Voice comms via Discord are required for squad operations.</div></div>
+        <div class="req-card fade-in"><div class="mono">Access</div><div class="val">Whitelist</div><div class="sub">Password-protected — get the join code and briefing in Discord.</div></div>
+        <div class="req-card fade-in"><div class="mono">Region</div><div class="val">EU</div><div class="sub">Hosted in London, tuned for Baltic and wider European players.</div></div>
+        <div class="req-card fade-in"><div class="mono">Platform</div><div class="val">Cross-play</div><div class="sub">PC, Xbox, and PlayStation — BattlEye protected.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="signal">
+    <div class="wrap signal">
+      <div class="eyebrow" style="justify-content:center;">06 · Command and Signal</div>
+      <h2>Join the Front</h2>
+      <p>The server is password-protected. Join Discord first for access details and the operations schedule.</p>
+      <div class="connect"><span class="k">DISCORD</span> discord.gg/wpaFup8MM</div><br>
+      <div class="connect"><span class="k">HOST</span> 198.244.165.6:10040</div>
+      <div class="cta-row" style="justify-content:center;">
+        <a href="https://discord.gg/wpaFup8MM" target="_blank" rel="noopener" class="btn btn-primary">Join Discord</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>VANGUARD OPERATIONS © 2026 · ARMA REFORGER COMMUNITY SERVER</div>
+  <div class="end">— END OF DOCUMENT —</div>
+</footer>
+
+<script>
+  const items = document.querySelectorAll('.fade-in');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.15});
+  items.forEach(i=>io.observe(i));
+
+  const tabs = document.querySelectorAll('.stat-tab');
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      tabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.leaderboard-panel').forEach(p=>p.classList.add('hidden'));
+      document.getElementById('panel-' + tab.dataset.target).classList.remove('hidden');
+    });
+  });
+
+  // Live stats — via Google Apps Script web app (server-side, avoids CORS,
+  // keeps the bot token hidden from public view)
+  // Live stats — via Netlify Function (server-side call to Discord, avoids CORS)
+  const STATS_API_URL = "/.netlify/functions/stats";
+
+  async function loadStats(){
+    const updatedEl = document.getElementById('stats-updated');
+    try{
+      const res = await fetch(STATS_API_URL + '?t=' + Date.now());
+      if(!res.ok) throw new Error('bad response');
+      const data = await res.json();
+
+      const onlineLabel = document.getElementById('online-label');
+      const onlineNames = document.getElementById('online-names');
+      onlineLabel.textContent = 'Online: ' + (data.online ? data.online.length : 0);
+      onlineNames.textContent = data.online && data.online.length ? data.online.join(' · ') : 'No one connected right now';
+
+      const aiBody = document.querySelector('#board-ai-hunter tbody');
+      if(data.aiHunter && data.aiHunter.length){
+        aiBody.innerHTML = data.aiHunter.map((row,i)=>
+          `<tr><td>${String(i+1).padStart(2,'0')}</td><td>${row.name}</td><td>${row.aiKills}</td></tr>`
+        ).join('');
+      } else {
+        aiBody.innerHTML = '<tr><td colspan="3" class="board-empty">No PvE statistics available yet…</td></tr>';
+      }
+
+      const pvpBody = document.querySelector('#board-pvp-live tbody');
+      if(data.pvp && data.pvp.length){
+        pvpBody.innerHTML = data.pvp.map((row,i)=>
+          `<tr><td>${String(i+1).padStart(2,'0')}</td><td>${row.name}</td><td>${row.playerKills}</td><td>${row.longestShot || '—'}</td></tr>`
+        ).join('');
+      } else {
+        pvpBody.innerHTML = '<tr><td colspan="4" class="board-empty">No PvP statistics available yet…</td></tr>';
+      }
+
+      updatedEl.textContent = data.updatedAt ? ('Last synced: ' + data.updatedAt) : 'Synced with Discord.';
+    } catch(err){
+      updatedEl.textContent = 'Live stats unavailable right now — showing last known layout.';
+    }
+  }
+  loadStats();
+  setInterval(loadStats, 60000);
+</script>
+
+</body>
+</html>
