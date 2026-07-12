@@ -202,6 +202,32 @@
 
   .lore{margin-top:36px; padding-top:32px; border-top:1px dashed var(--line);}
   .lore-label{margin-bottom:14px;}
+
+  /* TERRITORY / CAMPAIGN PROGRESS */
+  .territory{margin-top:32px; padding-top:28px; border-top:1px dashed var(--line);}
+  .territory-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;}
+  .territory-label{color:var(--olive-light); font-size:0.75rem; letter-spacing:0.1em;}
+  .territory-pct{color:var(--rust); font-size:1.4rem; font-weight:600;}
+  .territory-bar{
+    position:relative; height:16px; background:linear-gradient(90deg, #2a1410, #241f12);
+    border:1px solid var(--line); border-radius:2px; overflow:hidden;
+  }
+  .territory-fill{
+    position:absolute; inset:0 auto 0 0; background:linear-gradient(90deg, var(--rust), #e0a05a);
+    transition:width 1s ease; box-shadow:0 0 12px rgba(201,98,42,0.5);
+  }
+  .territory-updated{margin-top:14px; color:var(--khaki-dim); font-size:0.7rem;}
+
+  .progress-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:0 32px; margin-top:26px;}
+  @media (max-width:700px){ .progress-grid{grid-template-columns:1fr;} }
+  .progress-col{display:flex; flex-direction:column;}
+  .progress-item{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:11px 0; border-bottom:1px dashed var(--line);
+  }
+  .progress-lbl{font-family:'Oswald', sans-serif; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--khaki-dim);}
+  .progress-val{font-family:'IBM Plex Mono', monospace; font-size:0.92rem; color:var(--khaki);}
+  .progress-val.rust{color:var(--rust);}
   .lore p{color:var(--khaki-dim); line-height:1.85; font-size:0.98rem; margin-bottom:14px; max-width:760px;}
   .video-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:36px;}
   @media (max-width:780px){ .video-grid{grid-template-columns:1fr;} }
@@ -404,6 +430,38 @@
           <div class="stat"><div class="num">∞</div><div class="lbl">Persistent Campaign</div></div>
         </div>
 
+        <div class="territory">
+          <div class="territory-head">
+            <span class="mono territory-label">TOTAL CAMPAIGN PROGRESS</span>
+            <span class="mono territory-pct" id="territory-pct">—%</span>
+          </div>
+          <div class="territory-bar">
+            <div class="territory-fill" id="territory-fill" style="width:0%"></div>
+          </div>
+
+          <div class="progress-grid">
+            <div class="progress-col">
+              <div class="progress-item"><span class="progress-lbl">Radio Towers</span><span class="progress-val" id="p-radioTowers">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Posters</span><span class="progress-val" id="p-posters">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Supporters</span><span class="progress-val" id="p-supporters">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Occupiers Killed</span><span class="progress-val rust" id="p-occupiersKilled">—</span></div>
+            </div>
+            <div class="progress-col">
+              <div class="progress-item"><span class="progress-lbl">Radar Sites</span><span class="progress-val" id="p-radarSites">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Factories</span><span class="progress-val" id="p-factories">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Neutral Population</span><span class="progress-val" id="p-neutral">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Resistance Losses</span><span class="progress-val rust" id="p-resistanceLosses">—</span></div>
+            </div>
+            <div class="progress-col">
+              <div class="progress-item"><span class="progress-lbl">Bases</span><span class="progress-val" id="p-bases">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Towns</span><span class="progress-val" id="p-towns">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Hostiles</span><span class="progress-val" id="p-hostiles">—</span></div>
+              <div class="progress-item"><span class="progress-lbl">Days Fighting</span><span class="progress-val" id="p-daysFighting">—</span></div>
+            </div>
+          </div>
+          <p class="territory-updated mono" id="territory-updated"></p>
+        </div>
+
         <div class="lore">
           <div class="mono lore-label">The History Behind It</div>
           <p>After signing the Molotov–Ribbentrop Pact, Nazi Germany and the Soviet Union carve up Eastern Europe into spheres of influence. Lithuania falls under Soviet control and is occupied. Mass deportations to Siberia begin. Young men start gathering in the forests in small groups, and more and more people join the fight for freedom and independence. Partisan units form across different regions of the country.</p>
@@ -570,6 +628,64 @@
   }
   loadStats();
   setInterval(loadStats, 60000);
+
+  // Campaign progress — updated by hand each time a new screenshot comes in
+  const CAMPAIGN_PROGRESS = {
+    totalProgress: 18,
+    objectives: {
+      radioTowers: { current: 1, total: 7 },
+      radarSites: { current: 1, total: 3 },
+      bases: { current: 0, total: 11 },
+      posters: { current: 50, total: 120 },
+      factories: { current: 1, total: 7 },
+      towns: { current: 7, total: 21 }
+    },
+    population: {
+      supporters: { percent: 28, current: 86, total: 303 },
+      neutral: { percent: 71, current: 217, total: 303 },
+      hostiles: { percent: 0, current: 0, total: 303 }
+    },
+    occupiersKilled: 244,
+    resistanceLosses: 89,
+    daysFighting: 10,
+    updatedAt: "2026-07-12"
+  };
+
+  function loadTerritory(){
+    const data = CAMPAIGN_PROGRESS;
+    const pct = Math.max(0, Math.min(100, data.totalProgress));
+
+    document.getElementById('territory-pct').textContent = pct + '%';
+    document.getElementById('territory-fill').style.width = pct + '%';
+
+    const o = data.objectives || {};
+    const setRatio = (id, obj) => {
+      const el = document.getElementById(id);
+      if(el && obj) el.textContent = obj.current + ' / ' + obj.total;
+    };
+    setRatio('p-radioTowers', o.radioTowers);
+    setRatio('p-radarSites', o.radarSites);
+    setRatio('p-bases', o.bases);
+    setRatio('p-posters', o.posters);
+    setRatio('p-factories', o.factories);
+    setRatio('p-towns', o.towns);
+
+    const p = data.population || {};
+    const setPct = (id, obj) => {
+      const el = document.getElementById(id);
+      if(el && obj) el.textContent = obj.percent + '% (' + obj.current + '/' + obj.total + ')';
+    };
+    setPct('p-supporters', p.supporters);
+    setPct('p-neutral', p.neutral);
+    setPct('p-hostiles', p.hostiles);
+
+    document.getElementById('p-occupiersKilled').textContent = data.occupiersKilled;
+    document.getElementById('p-resistanceLosses').textContent = data.resistanceLosses;
+    document.getElementById('p-daysFighting').textContent = data.daysFighting;
+
+    document.getElementById('territory-updated').textContent = data.updatedAt ? ('Last updated: ' + data.updatedAt) : '';
+  }
+  loadTerritory();
 </script>
 
 </body>
