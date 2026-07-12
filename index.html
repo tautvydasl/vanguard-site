@@ -733,7 +733,7 @@
   async function loadMerch(){
     const grid = document.getElementById('merch-grid');
     try{
-      const res = await fetch(`https://storefront-api.fourthwall.com/v1/collections/all/products?storefront_token=${FOURTHWALL_TOKEN}`);
+      const res = await fetch(`https://storefront-api.fourthwall.com/v1/collections/all/products?storefront_token=${FOURTHWALL_TOKEN}&currency=EUR`);
       if(!res.ok) throw new Error('bad response');
       const data = await res.json();
       const products = data.results || data.products || data || [];
