@@ -278,6 +278,27 @@
   .req-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
   @media (max-width:900px){ .req-grid{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:600px){ .req-grid{grid-template-columns:1fr;} }
+
+  /* MERCH */
+  .merch-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:32px;}
+  @media (max-width:900px){ .merch-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .merch-grid{grid-template-columns:1fr;} }
+  .merch-card{
+    display:block; text-decoration:none; background:var(--panel); border:1px solid var(--line);
+    border-radius:2px; overflow:hidden; transition:border-color .25s, transform .25s;
+  }
+  .merch-card:hover{border-color:var(--rust); transform:translateY(-4px);}
+  .merch-thumb{
+    aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(160deg, var(--panel-2), #171911); font-size:3.4rem;
+    border-bottom:1px solid var(--line); overflow:hidden;
+  }
+  .merch-thumb img{width:100%; height:100%; object-fit:cover;}
+  .merch-loading{grid-column:1/-1; text-align:center; padding:40px; color:var(--khaki-dim); font-size:0.8rem;}
+  .merch-body{padding:16px 18px;}
+  .merch-tag{font-family:'Oswald', sans-serif; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--olive-light);}
+  .merch-name{font-family:'Big Shoulders Stencil', sans-serif; font-size:1.5rem; color:var(--khaki); line-height:1.1; margin-top:4px;}
+  .merch-price{font-family:'IBM Plex Mono', monospace; font-size:0.9rem; color:var(--rust); margin-top:8px;}
   .req-card{border:1px solid var(--line); padding:24px; background:var(--panel);}
   .req-card .mono{color:var(--olive-light); font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;}
   .req-card .val{font-family:'Big Shoulders Stencil', sans-serif; font-size:1.9rem; color:var(--khaki); margin-top:6px;}
@@ -321,6 +342,7 @@
       <a href="#execution">Execution</a>
       <a href="#stats">Stats</a>
       <a href="#sustainment">Sustainment</a>
+      <a href="#merch">Merch</a>
       <a href="#signal">Command &amp; Signal</a>
     </nav>
   </div>
@@ -550,15 +572,31 @@
     </div>
   </section>
 
+  <section id="merch">
+    <div class="wrap">
+      <div class="sec-head fade-in"><span class="sec-num">06</span><h2>Merch</h2></div>
+      <p class="stats-intro fade-in">Gear carrying the squad's colors. Printed and shipped from the EU.</p>
+
+      <div class="merch-grid" id="merch-grid">
+        <div class="merch-loading mono">Loading products…</div>
+      </div>
+
+      <div class="cta-row fade-in">
+        <a href="https://tautvydas-shop.fourthwall.com/en-eur" target="_blank" rel="noopener" class="btn btn-ghost">View Full Shop ↗</a>
+      </div>
+    </div>
+  </section>
+
   <section id="signal">
     <div class="wrap signal">
-      <div class="eyebrow" style="justify-content:center;">06 · Command and Signal</div>
+      <div class="eyebrow" style="justify-content:center;">07 · Command and Signal</div>
       <h2>Join the Front</h2>
       <p>The server is password-protected. Join Discord first for access details and the operations schedule.</p>
       <div class="connect"><span class="k">DISCORD</span> discord.gg/wpaFup8MM</div><br>
       <div class="connect"><span class="k">HOST</span> 198.244.165.6:10040</div>
       <div class="cta-row" style="justify-content:center;">
         <a href="https://discord.gg/wpaFup8MM" target="_blank" rel="noopener" class="btn btn-primary">Join Discord</a>
+        <a href="https://tautvydas-shop.fourthwall.com/en-eur" target="_blank" rel="noopener" class="btn btn-ghost">🛒 Shop Merch</a>
         <a href="https://buymeacoffee.com/tucchphpbo" target="_blank" rel="noopener" class="btn btn-ghost">☕ Support the Server</a>
       </div>
     </div>
@@ -687,6 +725,43 @@
     document.getElementById('territory-updated').textContent = data.updatedAt ? ('Last updated: ' + data.updatedAt) : '';
   }
   loadTerritory();
+
+  // Merch — fetched live from Fourthwall Storefront API
+  const FOURTHWALL_TOKEN = "ptkn_26ad7916-48a4-484d-b966-0217fa4a43d9";
+  const FOURTHWALL_SHOP = "https://tautvydas-shop.fourthwall.com/en-eur";
+
+  async function loadMerch(){
+    const grid = document.getElementById('merch-grid');
+    try{
+      const res = await fetch(`https://storefront-api.fourthwall.com/v1/collections/all/products?storefront_token=${FOURTHWALL_TOKEN}`);
+      if(!res.ok) throw new Error('bad response');
+      const data = await res.json();
+      const products = data.results || data.products || data || [];
+
+      if(!products.length){ grid.innerHTML = '<div class="merch-loading mono">No products published yet.</div>'; return; }
+
+      grid.innerHTML = products.map(p => {
+        const img = p.images && p.images[0] ? p.images[0].url : '';
+        const price = p.variants && p.variants[0] && p.variants[0].unitPrice
+          ? p.variants[0].unitPrice.value + ' ' + p.variants[0].unitPrice.currency
+          : '';
+        const thumb = img
+          ? `<img src="${img}" alt="${p.name}" loading="lazy">`
+          : `<span class="merch-icon">🎖️</span>`;
+        return `
+          <a class="merch-card fade-in in" href="${FOURTHWALL_SHOP}/products/${p.slug}" target="_blank" rel="noopener">
+            <div class="merch-thumb">${thumb}</div>
+            <div class="merch-body">
+              <div class="merch-name">${p.name}</div>
+              <div class="merch-price">${price}</div>
+            </div>
+          </a>`;
+      }).join('');
+    } catch(err){
+      grid.innerHTML = '<div class="merch-loading mono">Shop temporarily unavailable — <a href="' + FOURTHWALL_SHOP + '" target="_blank" style="color:var(--rust);">view it directly</a>.</div>';
+    }
+  }
+  loadMerch();
 </script>
 
 </body>
