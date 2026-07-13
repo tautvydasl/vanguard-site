@@ -295,6 +295,26 @@
   }
   .merch-thumb img{width:100%; height:100%; object-fit:cover;}
   .merch-loading{grid-column:1/-1; text-align:center; padding:40px; color:var(--khaki-dim); font-size:0.8rem;}
+
+  /* MEMBERSHIP */
+  .tier-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:32px;}
+  @media (max-width:800px){ .tier-grid{grid-template-columns:1fr;} }
+  .tier-card{
+    display:block; text-decoration:none; background:var(--panel); border:1px solid var(--line);
+    border-radius:2px; padding:32px 26px; text-align:center; transition:border-color .25s, transform .25s;
+  }
+  .tier-card:hover{border-color:var(--olive-light); transform:translateY(-4px);}
+  .tier-featured{border-color:var(--rust); background:linear-gradient(160deg, var(--panel) 0%, #1f1712 100%);}
+  .tier-name{font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.12em; font-size:0.85rem; color:var(--olive-light);}
+  .tier-price{font-family:'Big Shoulders Stencil', sans-serif; font-size:2.6rem; color:var(--khaki); margin-top:8px;}
+  .tier-price span{font-family:'IBM Plex Mono', monospace; font-size:1rem; color:var(--khaki-dim);}
+  .tier-perks{list-style:none; margin:20px 0; text-align:left;}
+  .tier-perks li{padding:8px 0; border-top:1px dashed var(--line); color:var(--khaki-dim); font-size:0.85rem;}
+  .tier-perks li:first-child{border-top:none;}
+  .tier-cta{
+    font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.1em; font-size:0.8rem;
+    color:var(--rust); margin-top:10px;
+  }
   .merch-body{padding:16px 18px;}
   .merch-tag{font-family:'Oswald', sans-serif; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--olive-light);}
   .merch-name{font-family:'Big Shoulders Stencil', sans-serif; font-size:1.5rem; color:var(--khaki); line-height:1.1; margin-top:4px;}
@@ -587,6 +607,45 @@
     </div>
   </section>
 
+  <!-- Membership section hidden until Bohemia Interactive approval
+  <section id="membership">
+    <div class="wrap">
+      <div class="sec-head fade-in"><span class="sec-num">07</span><h2>Membership</h2></div>
+      <p class="stats-intro fade-in">Back the squad monthly and unlock supporter perks.</p>
+
+      <div class="tier-grid">
+        <a class="tier-card fade-in" href="https://buymeacoffee.com/tucchphpbo/membership" target="_blank" rel="noopener">
+          <div class="tier-name">Operative</div>
+          <div class="tier-price">$15<span>/mo</span></div>
+          <ul class="tier-perks">
+            <li>Support the squad monthly</li>
+            <li>Exclusive posts and messages</li>
+          </ul>
+          <div class="tier-cta">Join ↗</div>
+        </a>
+        <a class="tier-card tier-featured fade-in" href="https://buymeacoffee.com/tucchphpbo/membership" target="_blank" rel="noopener">
+          <div class="tier-name">Pathfinder</div>
+          <div class="tier-price">$30<span>/mo</span></div>
+          <ul class="tier-perks">
+            <li>Support the squad monthly</li>
+            <li>Exclusive posts and messages</li>
+          </ul>
+          <div class="tier-cta">Join ↗</div>
+        </a>
+        <a class="tier-card fade-in" href="https://buymeacoffee.com/tucchphpbo/membership" target="_blank" rel="noopener">
+          <div class="tier-name">Legend</div>
+          <div class="tier-price">$50<span>/mo</span></div>
+          <ul class="tier-perks">
+            <li>Support the squad monthly</li>
+            <li>Exclusive posts and messages</li>
+          </ul>
+          <div class="tier-cta">Join ↗</div>
+        </a>
+      </div>
+    </div>
+  </section>
+  -->
+
   <section id="signal">
     <div class="wrap signal">
       <div class="eyebrow" style="justify-content:center;">07 · Command and Signal</div>
@@ -670,24 +729,24 @@
 
   // Campaign progress — updated by hand each time a new screenshot comes in
   const CAMPAIGN_PROGRESS = {
-    totalProgress: 18,
+    totalProgress: 32,
     objectives: {
-      radioTowers: { current: 1, total: 7 },
+      radioTowers: { current: 2, total: 7 },
       radarSites: { current: 1, total: 3 },
-      bases: { current: 0, total: 11 },
+      bases: { current: 2, total: 11 },
       posters: { current: 50, total: 120 },
-      factories: { current: 1, total: 7 },
-      towns: { current: 7, total: 21 }
+      factories: { current: 4, total: 7 },
+      towns: { current: 8, total: 21 }
     },
     population: {
-      supporters: { percent: 28, current: 86, total: 303 },
-      neutral: { percent: 71, current: 217, total: 303 },
-      hostiles: { percent: 0, current: 0, total: 303 }
+      supporters: { percent: 35, current: 107, total: 304 },
+      neutral: { percent: 64, current: 197, total: 304 },
+      hostiles: { percent: 0, current: 0, total: 304 }
     },
-    occupiersKilled: 244,
-    resistanceLosses: 89,
-    daysFighting: 10,
-    updatedAt: "2026-07-12"
+    occupiersKilled: 527,
+    resistanceLosses: 119,
+    daysFighting: 14,
+    updatedAt: "2026-07-13"
   };
 
   function loadTerritory(){
