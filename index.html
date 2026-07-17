@@ -338,6 +338,11 @@
     color:var(--khaki-dim); letter-spacing:0.08em;
   }
   footer .end{color:var(--olive-light); margin-top:8px;}
+  footer .legal-note{
+    max-width:640px; margin:28px auto 0; font-size:0.6rem; line-height:1.6;
+    color:var(--khaki-dim); opacity:0.6; letter-spacing:0.02em;
+  }
+  footer .legal-note a{color:var(--olive-light); text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -665,7 +670,13 @@
 <footer>
   <div>VANGUARD OPERATIONS © 2026 · ARMA REFORGER COMMUNITY SERVER</div>
   <div class="end">— END OF DOCUMENT —</div>
+  <div class="legal-note">
+    Officially approved for monetization by Bohemia Interactive — see the
+    <a href="https://www.bohemia.net/monetization/approved/armareforger" target="_blank" rel="noopener">approved servers list</a>.
+    This website is not affiliated with or authorized by Bohemia Interactive a.s. Bohemia Interactive, ARMA, and all associated logos and designs are trademarks or registered trademarks of Bohemia Interactive a.s.
+  </div>
 </footer>
+
 
 <script>
   const items = document.querySelectorAll('.fade-in');
@@ -729,24 +740,24 @@
 
   // Campaign progress — updated by hand each time a new screenshot comes in
   const CAMPAIGN_PROGRESS = {
-    totalProgress: 40,
+    totalProgress: 46,
     objectives: {
-      radioTowers: { current: 3, total: 7 },
+      radioTowers: { current: 7, total: 7 },
       radarSites: { current: 1, total: 3 },
-      bases: { current: 4, total: 11 },
-      posters: { current: 50, total: 120 },
+      bases: { current: 3, total: 11 },
+      posters: { current: 55, total: 121 },
       factories: { current: 4, total: 7 },
-      towns: { current: 9, total: 21 }
+      towns: { current: 10, total: 21 }
     },
     population: {
-      supporters: { percent: 32, current: 104, total: 318 },
-      neutral: { percent: 67, current: 214, total: 318 },
-      hostiles: { percent: 0, current: 0, total: 318 }
+      supporters: { percent: 31, current: 101, total: 316 },
+      neutral: { percent: 68, current: 215, total: 316 },
+      hostiles: { percent: 0, current: 0, total: 316 }
     },
-    occupiersKilled: 697,
-    resistanceLosses: 152,
-    daysFighting: 18,
-    updatedAt: "2026-07-14"
+    occupiersKilled: 1450,
+    resistanceLosses: 228,
+    daysFighting: 51,
+    updatedAt: "2026-07-17"
   };
 
   function loadTerritory(){
